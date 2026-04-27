@@ -25,8 +25,14 @@ type ConvertResult struct {
 	DynamicQRIS string `json:"dynamic_qris"`
 }
 
-// Convert takes a static QRIS string and an amount, and returns a dynamic QRIS string.
-func Convert(qrisString string, amount int) (*ConvertResult, error) {
+// Convert takes a static QRIS string, an amount, and an optional remarks string,
+// and returns a dynamic QRIS string. Remarks are embedded as tag 62 sub-tag 08
+// (Purpose of Transaction) per the EMVCo/QRIS spec.
+func Convert(qrisString string, amount int, remarks ...string) (*ConvertResult, error) {
+	remark := ""
+	if len(remarks) > 0 {
+		remark = strings.TrimSpace(remarks[0])
+	}
 	qrisString = strings.TrimSpace(qrisString)
 
 	if len(qrisString) < 10 {
@@ -77,6 +83,10 @@ func Convert(qrisString string, amount int) (*ConvertResult, error) {
 			newTLVs = append(newTLVs, TLV{Tag: TagTransactionAmount, Value: amountStr})
 			amountInserted = true
 
+		case "62":
+			// Skip existing additional data — we'll rebuild it below if needed
+			continue
+
 		case TagCRC:
 			// Skip old CRC — we'll recalculate it
 			continue
@@ -90,6 +100,12 @@ func Convert(qrisString string, amount int) (*ConvertResult, error) {
 			newTLVs = append(newTLVs, TLV{Tag: TagTransactionAmount, Value: amountStr})
 			amountInserted = true
 		}
+	}
+
+	// Embed remarks as tag 62 sub-tag 08 (Purpose of Transaction)
+	if remark != "" {
+		purposeSubTLV := fmt.Sprintf("08%02d%s", len(remark), remark)
+		newTLVs = append(newTLVs, TLV{Tag: "62", Value: purposeSubTLV})
 	}
 
 	// If amount still not inserted (no tag 53 and no tag 54 found), append
