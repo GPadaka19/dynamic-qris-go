@@ -3,8 +3,6 @@ services:
     build: .
     container_name: dynamic-qris
     restart: unless-stopped
-    ports:
-      - "4009:4009"
     environment:
       PORT: "4009"
       WA_API_URL: ${WA_API_URL}
@@ -14,6 +12,16 @@ services:
       - ./data:/app/data
     networks:
       - qris-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.qris.rule=Host(`qris.gpadaka.com`)"
+      - "traefik.http.routers.qris.entrypoints=websecure"
+      - "traefik.http.routers.qris.tls=true"
+      - "traefik.http.routers.qris.tls.certresolver=cloudflare"
+      - "traefik.http.services.qris.loadbalancer.server.port=4009"
+      - "traefik.http.routers.qris.priority=10"
+      
+      - "traefik.http.routers.qris.middlewares=authelia-auth@docker"
 
 networks:
   qris-net:
