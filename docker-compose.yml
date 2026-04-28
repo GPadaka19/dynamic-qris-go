@@ -1,0 +1,20 @@
+services:
+  dynamic-qris:
+    build: .
+    container_name: dynamic-qris
+    restart: unless-stopped
+    ports:
+      - "4008:4008"
+    environment:
+      PORT: "4008"
+      WA_API_URL: ${WA_API_URL}
+      WA_USER: ${WA_USER}
+      WA_PASSWORD: ${WA_PASSWORD}
+    volumes:
+      - ./data:/app/data
+    networks:
+      - qris-net
+
+networks:
+  qris-net:
+    external: true

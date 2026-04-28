@@ -39,7 +39,7 @@ func loadConfig() {
 	loadEnvFile(".env")
 
 	cfg = config{
-		Port:       getEnv("PORT", "8080"),
+		Port:       getEnv("PORT", "4008"),
 		WAApiURL:   strings.TrimRight(getEnv("WA_API_URL", ""), "/"),
 		WAUser:     getEnv("WA_USER", ""),
 		WAPassword: getEnv("WA_PASSWORD", ""),
