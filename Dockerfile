@@ -17,6 +17,6 @@ COPY --from=builder /src/web ./web
 # `data/qris.jpg` dibaca saat runtime; foldernya disediakan agar bisa di-mount via volume.
 RUN mkdir -p /app/data
 
-ENV PORT=4008
-EXPOSE 4008
+ENV PORT=4009
+EXPOSE 4009
 CMD ["./app"]

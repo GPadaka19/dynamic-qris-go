@@ -4,9 +4,9 @@ services:
     container_name: dynamic-qris
     restart: unless-stopped
     ports:
-      - "4008:4008"
+      - "4009:4009"
     environment:
-      PORT: "4008"
+      PORT: "4009"
       WA_API_URL: ${WA_API_URL}
       WA_USER: ${WA_USER}
       WA_PASSWORD: ${WA_PASSWORD}
