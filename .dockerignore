@@ -8,6 +8,7 @@
 .DS_Store
 data/*
 !data/.gitkeep
+!data/qris.jpg
 *.md
 Makefile
 docker-compose.yml

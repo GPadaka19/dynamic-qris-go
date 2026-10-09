@@ -2,7 +2,6 @@
 .env
 .env.*
 !.env.example
-data/qris.jpg
 .agents
 .claude
 /app

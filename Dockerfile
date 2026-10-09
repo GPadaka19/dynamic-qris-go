@@ -15,8 +15,8 @@ WORKDIR /app
 COPY --from=builder /src/app ./app
 COPY --from=builder /src/web ./web
 
-# `data/qris.jpg` dibaca saat runtime; foldernya disediakan agar bisa di-mount via volume.
-RUN mkdir -p /app/data
+# `data/qris.jpg` dibaca saat runtime dan ikut di-bake ke image.
+COPY --from=builder /src/data ./data
 USER app
 
 ENV PORT=4009
