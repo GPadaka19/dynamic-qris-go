@@ -1,28 +1,34 @@
+# Hanya untuk test lokal. Di produksi (skalo.id) image dibangun dari Dockerfile
+# dan env diisi lewat dashboard; routing/HTTPS ditangani platform.
 services:
   dynamic-qris:
     build: .
     container_name: dynamic-qris
     restart: unless-stopped
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "127.0.0.1:4009:4009"
     environment:
       PORT: "4009"
       WA_API_URL: ${WA_API_URL}
       WA_USER: ${WA_USER}
       WA_PASSWORD: ${WA_PASSWORD}
+      WA_DEVICE_ID: ${WA_DEVICE_ID:-}
+      APP_PASSWORD: ${APP_PASSWORD:-}
+      SESSION_SECRET: ${SESSION_SECRET:-}
     volumes:
-      - ./data:/app/data
-    networks:
-      - qris-net
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.qris.rule=Host(`qris.gpadaka.com`)"
-      - "traefik.http.routers.qris.entrypoints=websecure"
-      - "traefik.http.routers.qris.tls=true"
-      - "traefik.http.routers.qris.tls.certresolver=cloudflare"
-      - "traefik.http.services.qris.loadbalancer.server.port=4009"
-      - "traefik.http.routers.qris.priority=10"
-      
-      - "traefik.http.routers.qris.middlewares=authelia-auth@docker"
-
-networks:
-  qris-net:
-    external: true
+      - ./data:/app/data:ro
+      - ./web:/app/web:ro # edit HTML/CSS/JS langsung, cukup refresh browser
+    develop:
+      watch: # `docker compose watch`: rebuild otomatis saat kode Go berubah
+        - action: rebuild
+          path: .
+          ignore:
+            - web/
+            - data/
+            - "*.md"
+            - .git/

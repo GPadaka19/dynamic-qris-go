@@ -182,7 +182,8 @@ label {
   color: var(--text-900);
 }
 
-input[type="text"] {
+input[type="text"],
+input[type="password"] {
   width: 100%;
   padding: 13px 14px;
   background: var(--surface-2);
@@ -196,12 +197,14 @@ input[type="text"] {
   transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
 }
 
-input[type="text"]::placeholder {
+input[type="text"]::placeholder,
+input[type="password"]::placeholder {
   color: var(--text-400);
   font-weight: 400;
 }
 
-input[type="text"]:focus {
+input[type="text"]:focus,
+input[type="password"]:focus {
   border-color: var(--border-focus);
   background: var(--surface);
   box-shadow: 0 0 0 3px rgba(227, 0, 25, 0.08);
@@ -918,4 +921,33 @@ input[type="text"]:focus {
   .header-brand h1 {
     font-size: 1.3rem;
   }
+}
+
+/* ===== Login / Logout ===== */
+
+.login-container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.btn-logout {
+  margin-left: auto;
+  padding: 8px 12px;
+  background: transparent;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-600);
+  font-family: "Inter", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color var(--transition), color var(--transition);
+}
+
+.btn-logout:hover {
+  border-color: var(--qris-red);
+  color: var(--qris-red);
 }

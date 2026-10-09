@@ -9,6 +9,32 @@
   const API_CONTACTS = "/api/contacts";
   const API_SEND     = "/api/send";
 
+  // Redirect to the login page when the session is missing or expired.
+  async function apiFetch(url, opts) {
+    const res = await fetch(url, opts);
+    if (res.status === 401) {
+      window.location.href = "/login";
+      throw new Error("Sesi berakhir, silakan login kembali");
+    }
+    return res;
+  }
+
+  // Show the logout button only when the server has login enabled.
+  (async function initSession() {
+    try {
+      const res  = await apiFetch("/api/session");
+      const data = await res.json();
+      if (data.auth) {
+        const btn = document.getElementById("logoutBtn");
+        btn.hidden = false;
+        btn.addEventListener("click", async () => {
+          await fetch("/api/logout", { method: "POST" });
+          window.location.href = "/login";
+        });
+      }
+    } catch (_) { /* ignore: the main UI works without it */ }
+  })();
+
   // ─── QRIS Form Elements ───────────────────────────────────────
   const form         = document.getElementById("convertForm");
   const amountInput  = document.getElementById("amountInput");
@@ -62,7 +88,7 @@
 
   async function loadQRIS() {
     try {
-      const res  = await fetch("/api/qris");
+      const res  = await apiFetch("/api/qris");
       const data = await res.json();
       if (data.success && data.qris) {
         setStatus("loaded", "QRIS siap");
@@ -129,7 +155,7 @@
     setLoading(true);
 
     try {
-      const res  = await fetch("/api/convert", {
+      const res  = await apiFetch("/api/convert", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({
@@ -272,7 +298,7 @@
     setContactState("loading");
 
     try {
-      const res  = await fetch(API_CONTACTS);
+      const res  = await apiFetch(API_CONTACTS);
       const data = await res.json();
 
       if (data.code !== "SUCCESS") {
@@ -382,7 +408,7 @@
     try {
       const phone = selectedContact.jid.split("@")[0];
 
-      const res  = await fetch(API_SEND, {
+      const res  = await apiFetch(API_SEND, {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({

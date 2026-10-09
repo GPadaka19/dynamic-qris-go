@@ -1,5 +1,8 @@
 .DS_Store
+.env
+.env.*
+!.env.example
 data/qris.jpg
 .agents
 .claude
-.env
+/app

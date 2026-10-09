@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Masuk — Dynamic QRIS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="container login-container">
+      <header class="header">
+        <div class="header-brand">
+          <svg class="header-qris-icon" width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true">
+            <rect x="1" y="1" width="14" height="14" rx="2.5" stroke="#e30019" stroke-width="2"/>
+            <rect x="4" y="4" width="8" height="8" rx="1" fill="#e30019"/>
+            <rect x="21" y="1" width="14" height="14" rx="2.5" stroke="#e30019" stroke-width="2"/>
+            <rect x="24" y="4" width="8" height="8" rx="1" fill="#e30019"/>
+            <rect x="1" y="21" width="14" height="14" rx="2.5" stroke="#e30019" stroke-width="2"/>
+            <rect x="4" y="24" width="8" height="8" rx="1" fill="#e30019"/>
+            <rect x="23" y="23" width="4" height="4" rx="0.8" fill="#e30019"/>
+            <rect x="29" y="23" width="4" height="4" rx="0.8" fill="#e30019"/>
+            <rect x="23" y="29" width="4" height="4" rx="0.8" fill="#e30019"/>
+            <rect x="29" y="29" width="4" height="4" rx="0.8" fill="#e30019"/>
+          </svg>
+          <div>
+            <h1>Dynamic QRIS</h1>
+            <p class="header-sub">Masuk untuk melanjutkan</p>
+          </div>
+        </div>
+      </header>
+
+      <div class="form-card">
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="passwordInput">Password</label>
+            <input
+              type="password"
+              id="passwordInput"
+              autocomplete="current-password"
+              autofocus
+              required
+            />
+          </div>
+
+          <button type="submit" id="loginBtn" class="btn-generate">
+            <span class="btn-text">Masuk</span>
+            <span class="btn-loader" style="display:none">
+              <span class="spinner"></span>
+              Memeriksa...
+            </span>
+          </button>
+        </form>
+      </div>
+
+      <div id="errorMessage" class="error-banner" style="display:none" role="alert">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span id="errorText"></span>
+      </div>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+        const form    = document.getElementById("loginForm");
+        const input   = document.getElementById("passwordInput");
+        const btn     = document.getElementById("loginBtn");
+        const text    = btn.querySelector(".btn-text");
+        const loader  = btn.querySelector(".btn-loader");
+        const banner  = document.getElementById("errorMessage");
+        const errText = document.getElementById("errorText");
+
+        function setLoading(on) {
+          btn.disabled = on;
+          text.style.display   = on ? "none" : "";
+          loader.style.display = on ? "inline-flex" : "none";
+        }
+
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          banner.style.display = "none";
+          setLoading(true);
+          try {
+            const res  = await fetch("/api/login", {
+              method:  "POST",
+              headers: { "Content-Type": "application/json" },
+              body:    JSON.stringify({ password: input.value }),
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || "Gagal masuk");
+            window.location.href = "/";
+          } catch (err) {
+            errText.textContent = err.message || "Gagal masuk";
+            banner.style.display = "flex";
+            input.select();
+            setLoading(false);
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,14 @@
+.git
+.github
+.env
+.env.*
+!.env.example
+.claude
+.agents
+.DS_Store
+data/*
+!data/.gitkeep
+*.md
+Makefile
+docker-compose.yml
+Dockerfile
