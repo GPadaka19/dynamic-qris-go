@@ -7,7 +7,7 @@ RUN go mod download
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags="-s -w" -o app .
 
-FROM alpine:3.20
+FROM alpine:3.24
 RUN apk --no-cache add ca-certificates tzdata \
  && adduser -D -H -u 10001 app
 WORKDIR /app
